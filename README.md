@@ -6,6 +6,7 @@ own device settings from the [sunnylink.ai](https://www.sunnylink.ai) dashboard.
 It scans each settings page - either as you browse, or via a one-click auto-crawl -
 and builds a single compiled report of every switch, dropdown and slider value. All
 data stays on your machine in `chrome.storage.local`; nothing is transmitted anywhere.
+See [PRIVACY.md](PRIVACY.md) for the full privacy policy.
 
 ---
 
