@@ -38,5 +38,5 @@ browsing history, or any page outside `https://www.sunnylink.ai/`.
 
 ## Contact
 
-Questions about this policy can be raised via the project's GitHub repository:
-<https://github.com/Geomglot/sunnylink-reporter>
+Questions about this policy can be directed to the developer via the contact email
+listed on the extension's Chrome Web Store page.
