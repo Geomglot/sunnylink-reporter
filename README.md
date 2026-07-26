@@ -10,7 +10,19 @@ See [PRIVACY.md](PRIVACY.md) for the full privacy policy.
 
 ---
 
-## Install (unpacked)
+## Install from the Chrome Web Store (recommended)
+
+**[Add to Chrome](https://chromewebstore.google.com/detail/bbjdimjmoeppaeaakjlbglibidijoiho)**
+
+Open that link in desktop Chrome (or another Chromium browser such as Brave, Vivaldi
+or Opera) and click **Add to Chrome**. The extension is unlisted - it will not appear
+in store search, but anyone with this link can install it, and updates arrive
+automatically. Then pin the toolbar icon (see below) and open the **Instructions**
+button in the popup.
+
+---
+
+## Install (unpacked, for development)
 
 1. Keep all files together in one folder (this repo).
 2. Open Chrome and go to `chrome://extensions`.
