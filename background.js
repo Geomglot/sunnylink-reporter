@@ -111,8 +111,9 @@ async function crawlAll(sendProgress) {
       await spaGoto(tabId, href); // back to the page's base view before the next panel
     }
   }
-  // Leave the tab back on Home, and set the green OK badge LAST so nothing overwrites it.
-  await spaGoto(tabId, '/dashboard');
+  // Show the finished report in the crawl's own tab, then set the green OK badge LAST
+  // so nothing overwrites it.
+  try { await chrome.tabs.update(tabId, { url: chrome.runtime.getURL('report.html') }); } catch (e) {}
   sendProgress('Crawl complete (' + scanned + ' pages).');
   setBadge('OK', '#16a34a');
 }
@@ -122,6 +123,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   if (msg && msg.type === 'START_CRAWL') {
     if (crawling) { sendResponse({ ok: false, error: 'A crawl is already running.' }); return true; }
     crawling = true;
+    if (msg.originTabId != null) chrome.storage.local.set({ sunnylinkOriginTab: msg.originTabId });
     crawlAll(status => chrome.runtime.sendMessage({ type: 'CRAWL_PROGRESS', status }).catch(() => {}))
       .then(() => { crawling = false; sendResponse({ ok: true }); })
       .catch(e => { crawling = false; setBadge('err', '#dc2626'); sendResponse({ ok: false, error: String(e) }); });

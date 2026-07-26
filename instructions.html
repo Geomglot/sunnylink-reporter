@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>Sunnylink Settings Reporter - Instructions</title>
+<style>
+  body { font-family: -apple-system, Segoe UI, Roboto, sans-serif; background:#f4f5f7; margin:0; padding:32px; color:#1a1a1a; }
+  .wrap { max-width:720px; margin:0 auto; }
+  h1 { margin:0 0 4px; font-size:26px; }
+  .sub { color:#666; margin-bottom:24px; font-size:14px; }
+  .card { background:#fff; border-radius:10px; padding:18px 22px; box-shadow:0 1px 3px rgba(0,0,0,0.08); margin-bottom:16px; }
+  h2 { font-size:16px; margin:0 0 10px; border-bottom:1px solid #eee; padding-bottom:6px; }
+  ol, ul { margin:0; padding-left:20px; }
+  li { font-size:14px; margin:5px 0; line-height:1.45; }
+  p { font-size:14px; line-height:1.45; margin:0 0 10px; }
+  code { background:#eef0f3; padding:1px 5px; border-radius:4px; font-size:13px; }
+  .btn { font-weight:600; }
+  .on { color:#16a34a; font-weight:600; }
+  .off { color:#dc2626; font-weight:600; }
+  .pale { opacity:0.4; }
+</style></head>
+<body>
+  <div class="wrap">
+    <h1>Sunnylink Settings Reporter</h1>
+    <div class="sub">How to use the extension</div>
+
+    <div class="card">
+      <h2>Getting started</h2>
+      <ol>
+        <li>Log into <code>sunnylink.ai</code> in Chrome as you normally would.</li>
+        <li>Open the extension by clicking its toolbar icon. If you do not see it,
+            click the puzzle-piece icon near the top-right of Chrome and pin
+            <b>Sunnylink Settings Reporter</b>.</li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <h2>Buttons</h2>
+      <ul>
+        <li><span class="btn">Crawl All Pages</span> - opens a new tab and automatically
+            visits every settings page (selecting your device if asked), drilling into
+            sub-panels such as MADS and Torque Settings. When it finishes it shows the
+            compiled report in that same tab. Watch the toolbar badge for progress: a
+            rising count while scanning, then a green <b>OK</b> when done.</li>
+        <li><span class="btn">Rescan Current Page</span> - re-scans the sunnylink page you
+            are currently viewing. Useful after changing a setting.</li>
+        <li><span class="btn">Open Full Report</span> - opens the compiled report in a new
+            tab at any time.</li>
+        <li><span class="btn">Instructions</span> - opens this page.</li>
+        <li><span class="btn">Clear Saved Data</span> - deletes the stored report so you can
+            start fresh.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>Reading the report</h2>
+      <ul>
+        <li>Cards are laid out in the same order as the sunnylink left-hand menu.</li>
+        <li>Click a card's title to open that settings page - it reuses the tab you
+            launched the crawl from (or an existing sunnylink tab) rather than opening a
+            new one.</li>
+        <li>Values of <span class="on">On</span> are shown in green and
+            <span class="off">Off</span> in red for quick scanning.</li>
+        <li>Settings that cannot currently be changed (greyed out on the dashboard) are
+            shown in a <span class="pale">paler colour</span>.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>Good to know</h2>
+      <ul>
+        <li>The crawl needs one visible tab for its duration - do not close that tab while
+            it runs. It takes roughly 30-60 seconds.</li>
+        <li>Everything stays on your machine. Nothing is uploaded, shared, or tracked.</li>
+        <li>If a page's live values have not loaded yet (device briefly offline), that page
+            is skipped rather than recorded as "Connecting..." - just re-crawl once the
+            device is back online.</li>
+      </ul>
+    </div>
+  </div>
+</body></html>

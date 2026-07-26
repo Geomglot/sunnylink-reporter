@@ -19,10 +19,14 @@ document.getElementById('crawl').addEventListener('click', () => {
   const status = document.getElementById('status');
   btn.disabled = true;
   status.textContent = 'Starting crawl \u2014 a new tab will open and browse automatically...';
-  chrome.runtime.sendMessage({ type: 'START_CRAWL' }, res => {
-    btn.disabled = false;
-    status.textContent = res && res.ok ? 'Crawl complete.' : 'Crawl stopped early \u2014 check the report for what was captured.';
-    refreshList();
+  // Remember the tab the crawl was launched from, so report links can reuse it.
+  chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
+    const originTabId = tabs && tabs[0] ? tabs[0].id : null;
+    chrome.runtime.sendMessage({ type: 'START_CRAWL', originTabId }, res => {
+      btn.disabled = false;
+      status.textContent = res && res.ok ? 'Crawl complete.' : 'Crawl stopped early \u2014 check the report for what was captured.';
+      refreshList();
+    });
   });
 });
 
@@ -46,6 +50,10 @@ document.getElementById('rescan').addEventListener('click', () => {
 
 document.getElementById('report').addEventListener('click', () => {
   chrome.tabs.create({ url: chrome.runtime.getURL('report.html') });
+});
+
+document.getElementById('instructions').addEventListener('click', () => {
+  chrome.tabs.create({ url: chrome.runtime.getURL('instructions.html') });
 });
 
 document.getElementById('clear').addEventListener('click', () => {

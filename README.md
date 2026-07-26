@@ -47,7 +47,7 @@ Log into sunnylink.ai as normal, then either:
   navigates **inside the app** (client-side) rather than reloading each page, so the
   live link to your device stays connected throughout. The crawl takes roughly
   30-60 seconds and uses one visible tab - Manifest V3 extensions cannot browse fully
-  in the background. When finished it returns the tab to Home.
+  in the background. When finished it loads the compiled report in that same tab.
 
   Watch the **toolbar badge** for progress: `...` while starting, a rising count as
   pages are captured, a green **OK** when done (red **err** if it could not start).

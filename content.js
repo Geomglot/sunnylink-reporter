@@ -15,18 +15,78 @@
   // Given a control element, climb to its settings-row container and read the
   // row's label. The redesigned dashboard lays each row out as a
   // `justify-between` flex box: label text on the left, control on the right.
-  function labelForControl(ctrl) {
-    let row = ctrl;
+  function rowForControl(ctrl) {
+    let row = ctrl, fallback = null;
     for (let i = 0; i < 7 && row; i++) {
       row = row.parentElement;
       if (!row) break;
+      fallback = row;
       if (/justify-between/.test(row.className || '') &&
-          row.querySelectorAll('[role="switch"],[role="combobox"],[role="radio"]').length <= 1) break;
+          row.querySelectorAll('[role="switch"],[role="combobox"],[role="radio"]').length <= 1) return row;
     }
+    return fallback;
+  }
+
+  function labelForControl(ctrl) {
+    const row = rowForControl(ctrl);
     if (!row) return '';
     // The label is the first font-medium text element (a <button> or <span>) or a heading.
     const labelEl = row.querySelector('button[class*="font-medium"],[class*="font-medium"],h1,h2,h3,h4');
     return esc(labelEl ? labelEl.textContent : '');
+  }
+
+  // A setting that can't be altered renders greyed out. Detect that from the control
+  // and its ancestors: a real disabled/aria-disabled state, the usual "can't touch
+  // this" utility classes, or reduced opacity applied anywhere up the row.
+  const DISABLED_CLASS = /(?:^|\s)(?:opacity-[1-6]?\d|cursor-not-allowed|pointer-events-none|disabled)(?:\s|$)/;
+  function isDisabled(ctrl) {
+    let el = ctrl;
+    for (let i = 0; i < 6 && el; i++) {
+      if (el.disabled === true) return true;
+      if (el.getAttribute && el.getAttribute('aria-disabled') === 'true') return true;
+      const cn = typeof el.className === 'string' ? el.className : '';
+      if (DISABLED_CLASS.test(cn)) return true;
+      try {
+        const op = parseFloat(getComputedStyle(el).opacity);
+        if (!isNaN(op) && op < 0.8) return true;
+      } catch (e) {}
+      el = el.parentElement;
+    }
+    return false;
+  }
+
+  // A range slider's label is the nearest lettered font-medium text in the setting
+  // block above the slider -- NOT the row of min/value/max numbers beneath it (which
+  // is why labelForControl, aimed at justify-between rows, misses sliders entirely).
+  function sliderLabel(sl) {
+    let el = sl;
+    for (let i = 0; i < 6 && el; i++) {
+      el = el.parentElement;
+      if (!el) break;
+      const cands = el.querySelectorAll('button[class*="font-medium"],[class*="font-medium"],h1,h2,h3,h4');
+      for (const c of cands) {
+        const t = esc(c.textContent);
+        if (t && /[a-z]/i.test(t) && t.length < 60) return t;
+      }
+    }
+    return '';
+  }
+
+  // The Vehicle page shows the detected car as a bespoke "fingerprint" card rather
+  // than a control: a bordered (rounded-xl) card containing "Auto-detected", with the
+  // model on a font-medium line, under a small "Vehicle" label. Capture it explicitly.
+  function extractVehicleModel(scope, rows) {
+    const card = Array.from(scope.querySelectorAll('[class*="rounded-xl"]'))
+      .find(c => /auto-detected/i.test(c.textContent || ''));
+    if (!card) return;
+    const valueEl = card.querySelector('[class*="font-medium"]');
+    const value = esc(valueEl ? valueEl.textContent : '');
+    if (isPlaceholder(value)) return;
+    // Label is the small text just above the card's wrapper; default to "Vehicle".
+    let label = 'Vehicle';
+    const lab = card.parentElement && card.parentElement.previousElementSibling;
+    if (lab && /[a-z]/i.test(lab.textContent || '') && esc(lab.textContent).length < 30) label = esc(lab.textContent);
+    if (!rows.some(r => r.label === label)) rows.push({ label, value, disabled: isDisabled(card) });
   }
 
   // A value that is empty or still a live-link placeholder ("Connecting...") is not
@@ -49,14 +109,23 @@
       let value;
       if (role === 'switch') value = ctrl.getAttribute('aria-checked') === 'true' ? 'On' : 'Off';
       else value = esc(ctrl.textContent);
-      if (label && !isPlaceholder(value)) rows.push({ label, value });
+      if (label && !isPlaceholder(value)) rows.push({ label, value, disabled: isDisabled(ctrl) });
     });
 
-    // Sliders / numeric steppers render their current value in a tabular-nums span.
+    // Range sliders: the value is the input's own value; the label sits above it.
+    scope.querySelectorAll('input[type="range"],[role="slider"]').forEach(sl => {
+      const raw = (sl.value != null && sl.value !== '') ? sl.value
+                : (sl.getAttribute('aria-valuetext') || sl.getAttribute('aria-valuenow') || '');
+      const value = esc(String(raw));
+      const label = sliderLabel(sl);
+      if (label && !isPlaceholder(value) && !rows.some(r => r.label === label)) rows.push({ label, value, disabled: isDisabled(sl) });
+    });
+
+    // Fallback for any other numeric display rendered in a tabular-nums span.
     scope.querySelectorAll('[class*="tabular-nums"]').forEach(sl => {
       const label = labelForControl(sl);
       const value = esc(sl.textContent);
-      if (label && !isPlaceholder(value) && !rows.some(r => r.label === label)) rows.push({ label, value });
+      if (label && !isPlaceholder(value) && !rows.some(r => r.label === label)) rows.push({ label, value, disabled: isDisabled(sl) });
     });
 
     // Legacy device pages used a <dl>/<dt> description list. Keep support in case
@@ -70,6 +139,8 @@
         if (!isPlaceholder(v)) rows.push({ label: esc(dt.textContent), value: v });
       });
     }
+
+    extractVehicleModel(scope, rows);
 
     const seen = new Set();
     return rows.filter(r => {
@@ -178,6 +249,19 @@
     return false;
   }
 
+  // Position of the current page in the left-hand menu, so the report can lay out
+  // its cards in the same order as the sidebar (top-to-bottom). The sidebar links,
+  // read in DOM order, ARE the menu order. Home is first; a sub-panel shares its
+  // parent page's index (and sorts after it by scan time); anything not found in
+  // the sidebar goes last.
+  function menuOrder() {
+    const base = location.pathname;
+    if (/^\/dashboard\/?$/.test(base)) return 0;
+    const links = discoverTopLevelLinks();
+    const i = links.indexOf(base);
+    return i >= 0 ? i + 1 : links.length + 1;
+  }
+
   function scanAndSave() {
     const rows = extractRows();
     if (!rows.length) return Promise.resolve(false);
@@ -185,7 +269,7 @@
     return new Promise(resolve => {
       chrome.storage.local.get('sunnylinkReport', data => {
         const report = data.sunnylinkReport || {};
-        report[key] = { rows, updatedAt: new Date().toISOString(), url: location.href };
+        report[key] = { rows, updatedAt: new Date().toISOString(), url: location.href, order: menuOrder() };
         chrome.storage.local.set({ sunnylinkReport: report }, () => resolve(true));
       });
     });

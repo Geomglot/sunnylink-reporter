@@ -7,12 +7,15 @@
   .grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap:16px; }
   .card { background:#fff; border-radius:10px; padding:16px 18px; box-shadow:0 1px 3px rgba(0,0,0,0.08); }
   .card h2 { font-size:16px; margin:0 0 10px; border-bottom:1px solid #eee; padding-bottom:6px; word-break:break-word; }
+  .card h2 a.src { color:inherit; text-decoration:none; cursor:pointer; }
+  .card h2 a.src:hover { color:#4f46e5; text-decoration:underline; }
   table { width:100%; border-collapse:collapse; font-size:13px; }
   td { padding:5px 4px; vertical-align:top; }
   td.label { color:#444; width:55%; }
   td.value { color:#111; font-weight:600; text-align:right; }
   td.value.on { color:#16a34a; }
   td.value.off { color:#dc2626; }
+  tr.disabled td { opacity:0.4; }
   tr:nth-child(even) { background:#fafafa; }
   .empty { text-align:center; color:#666; margin-top:80px; }
 </style></head>
