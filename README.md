@@ -1,6 +1,6 @@
 # Sunnylink Settings Reporter
 
-A private Chrome extension (Manifest V3) that compiles a read-only report of your
+A Chrome extension (Manifest V3) that compiles a read-only report of your
 own device settings from the [sunnylink.ai](https://www.sunnylink.ai) dashboard.
 
 It scans each settings page - either as you browse, or via a one-click auto-crawl -
