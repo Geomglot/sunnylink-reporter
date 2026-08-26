@@ -6,7 +6,8 @@ own device settings from the [sunnylink.ai](https://www.sunnylink.ai) dashboard.
 It scans each settings page - either as you browse, or via a one-click auto-crawl -
 and builds a single compiled report of every switch, dropdown and slider value. All
 data stays on your machine in `chrome.storage.local`; nothing is transmitted anywhere.
-See [PRIVACY.md](PRIVACY.md) for the full privacy policy.
+See [PRIVACY.md](PRIVACY.md) for the full privacy policy, and
+[CHANGELOG.md](CHANGELOG.md) for what has changed in each version.
 
 ---
 
@@ -15,10 +16,9 @@ See [PRIVACY.md](PRIVACY.md) for the full privacy policy.
 **[Add to Chrome](https://chromewebstore.google.com/detail/bbjdimjmoeppaeaakjlbglibidijoiho)**
 
 Open that link in desktop Chrome (or another Chromium browser such as Brave, Vivaldi
-or Opera) and click **Add to Chrome**. The extension is unlisted - it will not appear
-in store search, but anyone with this link can install it, and updates arrive
-automatically. Then pin the toolbar icon (see below) and open the **Instructions**
-button in the popup.
+or Opera) and click **Add to Chrome**. You can also find it by searching the Web Store
+for "Sunnylink Settings Reporter". Updates arrive automatically. Then pin the toolbar
+icon (see below) and open the **Instructions** button in the popup.
 
 ---
 

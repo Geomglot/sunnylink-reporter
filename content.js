@@ -3,6 +3,12 @@
 
   function contentScope() { return document.querySelector('main') || document.body; }
 
+  // Opening a sub-panel draws it over the page and marks everything underneath
+  // `inert`. That inert content is not what the user is looking at, so every scan
+  // has to skip it -- otherwise a sub-panel is scanned as if it were its parent page
+  // and each panel's card repeats the whole page it came from.
+  function isHidden(el) { return !!(el && el.closest && el.closest('[inert]')); }
+
   function sectionName() {
     const path = location.pathname;
     const panel = new URLSearchParams(location.search).get('panel');
@@ -77,7 +83,7 @@
   // model on a font-medium line, under a small "Vehicle" label. Capture it explicitly.
   function extractVehicleModel(scope, rows) {
     const card = Array.from(scope.querySelectorAll('[class*="rounded-xl"]'))
-      .find(c => /auto-detected/i.test(c.textContent || ''));
+      .find(c => !isHidden(c) && /auto-detected/i.test(c.textContent || ''));
     if (!card) return;
     const valueEl = card.querySelector('[class*="font-medium"]');
     const value = esc(valueEl ? valueEl.textContent : '');
@@ -102,7 +108,7 @@
 
     // Switches, dropdowns (combobox) and radios all report their value directly.
     scope.querySelectorAll('[role="switch"],[role="combobox"],[role="radio"]').forEach(ctrl => {
-      if (used.has(ctrl)) return;
+      if (used.has(ctrl) || isHidden(ctrl)) return;
       used.add(ctrl);
       const label = labelForControl(ctrl);
       const role = ctrl.getAttribute('role');
@@ -114,6 +120,7 @@
 
     // Range sliders: the value is the input's own value; the label sits above it.
     scope.querySelectorAll('input[type="range"],[role="slider"]').forEach(sl => {
+      if (isHidden(sl)) return;
       const raw = (sl.value != null && sl.value !== '') ? sl.value
                 : (sl.getAttribute('aria-valuetext') || sl.getAttribute('aria-valuenow') || '');
       const value = esc(String(raw));
@@ -123,6 +130,7 @@
 
     // Fallback for any other numeric display rendered in a tabular-nums span.
     scope.querySelectorAll('[class*="tabular-nums"]').forEach(sl => {
+      if (isHidden(sl)) return;
       const label = labelForControl(sl);
       const value = esc(sl.textContent);
       if (label && !isPlaceholder(value) && !rows.some(r => r.label === label)) rows.push({ label, value, disabled: isDisabled(sl) });
@@ -135,6 +143,7 @@
       const h1 = scope.querySelector('h1');
       if (h1) rows.unshift({ label: 'Device Model', value: esc(h1.textContent) });
       dts.forEach(dt => {
+        if (isHidden(dt)) return;
         const v = dt.nextElementSibling ? esc(dt.nextElementSibling.textContent) : '';
         if (!isPlaceholder(v)) rows.push({ label: esc(dt.textContent), value: v });
       });
@@ -166,7 +175,8 @@
       let lastCount = -1, stableTicks = 0;
       const start = Date.now();
       const timer = setInterval(() => {
-        const count = document.querySelectorAll('[role="switch"],[role="combobox"],[role="radio"],[class*="tabular-nums"],dt').length;
+        const count = Array.from(document.querySelectorAll(
+          '[role="switch"],[role="combobox"],[role="radio"],[class*="tabular-nums"],dt')).filter(e => !isHidden(e)).length;
         stableTicks = count === lastCount ? stableTicks + 1 : 0;
         lastCount = count;
         const settled = stableTicks >= 2 && !isLoading();
@@ -181,22 +191,64 @@
   // the account menu) are excluded, and keep a denylist as a second safety net.
   const DENY = /disable|delete|remove|reset|clear|exit|download|update|logout|sign.?out|pair|migrat|search settings|select\b/i;
 
+  // Two rows can look identical and behave completely differently. A row that opens
+  // a sub-panel has a static chevron. A row that merely expands in place -- the model
+  // groups on Models, a country on Maps, "View details" on Vehicle -- has a chevron
+  // that rotates as it opens, which the markup states outright with
+  // `transition-transform`. Reading that means the crawl never clicks a row that
+  // cannot open a panel, so it never waits on one either.
+  function isExpanderRow(btn) {
+    const svg = btn.querySelector('svg');
+    return /transition-transform/.test(String((svg && svg.getAttribute('class')) || ''));
+  }
+
+  // A sub-panel whose parent setting is switched off is a genuinely `disabled`
+  // button. That is an attribute rather than a guess at what dimming looks like, so
+  // a locked row can be dropped outright instead of clicked and waited on.
+  function isLockedRow(btn) {
+    return btn.disabled === true || btn.getAttribute('aria-disabled') === 'true';
+  }
+
   function subPanelButtons() {
-    return Array.from(contentScope().querySelectorAll('button'))
-      .filter(b => /w-full/.test(b.className || '') &&
+    const rows = Array.from(contentScope().querySelectorAll('button'))
+      .filter(b => !isHidden(b) &&
+                   /w-full/.test(b.className || '') &&
                    b.getAttribute('role') !== 'switch' &&
                    !/tabular-nums/.test(b.className || '') &&
-                   b.querySelector('svg'));
+                   b.querySelector('svg') &&
+                   !isExpanderRow(b) &&
+                   !isLockedRow(b));
+    // Where the page marks its navigating rows with `row-press`, that is the most
+    // direct statement of intent available, so trust it alone. If the class ever
+    // disappears, fall back to the checks above rather than returning nothing.
+    const pressable = rows.filter(b => /row-press/.test(b.className || ''));
+    return pressable.length ? pressable : rows;
+  }
+
+  // A row's label is its own heading text, not everything the button happens to
+  // contain. Rows can also carry a description, a badge or a value preview, and
+  // testing all of that against DENY -- which holds everyday words like "disable"
+  // and "update" that a description may well use -- would silently drop a real
+  // sub-panel. Fall back to the whole button text only when the row has no
+  // distinct label element.
+  function subPanelLabel(btn) {
+    const el = btn.querySelector('[class*="font-medium"],[class*="font-semibold"],h1,h2,h3,h4');
+    return esc(el ? el.textContent : btn.textContent);
   }
 
   function findSubPanels() {
+    const seen = new Set();
     return subPanelButtons()
-      .map(b => esc(b.textContent))
-      .filter(t => t && t.length < 40 && !DENY.test(t));
+      .map(subPanelLabel)
+      .filter(t => {
+        if (!t || t.length > 60 || DENY.test(t) || seen.has(t)) return false;
+        seen.add(t);
+        return true;
+      });
   }
 
   function clickSubPanel(label) {
-    const btn = subPanelButtons().find(b => esc(b.textContent) === label);
+    const btn = subPanelButtons().find(b => subPanelLabel(b) === label);
     if (btn) { btn.click(); return true; }
     return false;
   }
@@ -277,7 +329,25 @@
 
   function currentPath() { return location.pathname + location.search; }
 
-  window.__sunnylinkReporter = { extractRows, waitForSettle, findSubPanels, clickSubPanel, discoverTopLevelLinks, needsDeviceSelection, selectFirstDevice, navigateInPage, currentPath, scanAndSave, sectionName };
+  // Which sub-panel overlay is showing, if any. Opening one pushes `?panel=<id>`.
+  function currentPanel() { return new URLSearchParams(location.search).get('panel') || ''; }
+
+  // Resolves once an overlay is open (or closed, per wantOpen). The app pushes the
+  // `?panel=` URL asynchronously after the row is clicked, so polling the URL is the
+  // only reliable sign the overlay is really up. Rows that cannot open a panel are
+  // filtered out before they are ever clicked, so maxMs is a safety net against a
+  // stuck page rather than a delay the crawl routinely pays.
+  function waitForPanel(wantOpen, maxMs = 5000) {
+    return new Promise(resolve => {
+      const start = Date.now();
+      const timer = setInterval(() => {
+        const open = currentPanel() !== '';
+        if (open === wantOpen || Date.now() - start > maxMs) { clearInterval(timer); resolve(open === wantOpen); }
+      }, 100);
+    });
+  }
+
+  window.__sunnylinkReporter = { extractRows, waitForSettle, findSubPanels, clickSubPanel, discoverTopLevelLinks, needsDeviceSelection, selectFirstDevice, navigateInPage, currentPath, currentPanel, waitForPanel, scanAndSave, sectionName };
 
   // Still auto-scans when you just browse normally.
   waitForSettle(8000).then(scanAndSave);

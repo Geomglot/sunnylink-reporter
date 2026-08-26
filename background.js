@@ -54,15 +54,29 @@ async function settleAndScan(tabId, settleMs = 12000) {
   return ok;
 }
 
+// Which sub-panel overlay a path is showing, if any. Two paths that differ only by
+// `?panel=` are the same page but a different view, so the pathname on its own can
+// never tell us whether a hop has finished.
+function panelOf(pathAndSearch) {
+  const query = String(pathAndSearch || '').split('?')[1] || '';
+  return new URLSearchParams(query).get('panel') || '';
+}
+
 // Client-side navigation: click an in-app link and wait for the SvelteKit router to
-// land on the target path. Keeps the one warm device connection alive (a full reload
-// would drop it and get us bounced to /dashboard/devices).
+// land on the target path AND the target overlay state. Keeps the one warm device
+// connection alive (a full reload would drop it and bounce us to /dashboard/devices).
 async function spaGoto(tabId, targetPath) {
   await run(tabId, (p) => window.__sunnylinkReporter.navigateInPage(p), [targetPath]);
+  const wantPath = targetPath.split('?')[0];
+  const wantPanel = panelOf(targetPath);
   for (let i = 0; i < 25; i++) {
-    const path = await run(tabId, () => window.__sunnylinkReporter.currentPath());
-    if (path && path.split('?')[0] === targetPath.split('?')[0]) return true;
+    // Always let the router have a tick first. Reading the location straight after
+    // the click sees the state we are trying to leave, and the pathname still
+    // matches while a sub-panel is open, so an immediate check reports "arrived"
+    // before the overlay has closed -- and the next click then lands on nothing.
     await sleep(200);
+    const path = await run(tabId, () => window.__sunnylinkReporter.currentPath());
+    if (path && path.split('?')[0] === wantPath && panelOf(path) === wantPanel) return true;
   }
   return false;
 }
@@ -105,10 +119,16 @@ async function crawlAll(sendProgress) {
     for (const label of panels) {
       const clicked = await run(tabId, (l) => window.__sunnylinkReporter.clickSubPanel(l), [label]);
       if (!clicked) continue;
-      await sleep(400);
+      // Wait for the overlay to actually come up before scanning; otherwise the scan
+      // just re-records the page underneath and the sub-panel's settings are lost.
+      const opened = await run(tabId, () => window.__sunnylinkReporter.waitForPanel(true));
+      // Rows that cannot open a panel are filtered out before they are clicked, so
+      // this is an anomaly rather than the normal locked/expandable case: note it
+      // and move on rather than recording the page underneath a second time.
+      if (!opened) { progress('No panel opened for ' + label); await spaGoto(tabId, href); continue; }
       if (await settleAndScan(tabId, 8000)) scanned++;
       progress('Scanned ' + href + ' → ' + label);
-      await spaGoto(tabId, href); // back to the page's base view before the next panel
+      await spaGoto(tabId, href); // close this overlay before opening the next one
     }
   }
   // Show the finished report in the crawl's own tab, then set the green OK badge LAST
