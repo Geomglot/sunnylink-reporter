@@ -13,9 +13,11 @@ in `chrome.storage.local`. Repo and Chrome Web Store listing are both public.
 v1.5.0 is committed, tagged and pushed to `main` (`11661db`, tag `v1.5.0`). Working
 tree clean, nothing unpushed. Geomglot tested the build and confirmed it good.
 
-**Not yet submitted to the Chrome Web Store.** `sunnylink-reporter-1.5.0.zip` is
-built from the pushed tree and sits in the project root (gitignored, local only).
-That upload is the one outstanding piece of the release.
+**Submitted to the Chrome Web Store on 2026-08-27, awaiting review.** The package
+uploaded was `sunnylink-reporter-1.5.0.zip`, built from the pushed tree and still in
+the project root (gitignored, local only). Nothing further is needed unless review
+comes back with questions. The listing is Public, so this review may take longer than
+the unlisted ones before it.
 
 v1.5.0 fixes sub-panel capture. The bug: `spaGoto` compared only the pathname, but a
 sub-panel shares its parent's pathname and differs only by `?panel=`, so "go back to
@@ -52,18 +54,20 @@ the Models rows were never locked panels at all but accordions, leading to the
 attribute-based filtering above. Added `CHANGELOG.md`, updated `README.md` for the
 now-public repo and store listing, bumped to 1.5.0, restored version tagging (it had
 lapsed after v1.2.0; v1.3.0/v1.4.0 already existed on the remote). Rebased onto a
-remote commit where Geomglot had made the same README edit independently.
+remote commit where Geomglot had made the same README edit independently. Closed by
+submitting 1.5.0 to the Chrome Web Store on 2026-08-27; review outcome not yet known
+at the time of writing.
 
 ## OPEN LOOPS
 
-- **Chrome Web Store submission for 1.5.0 is not done.** Zip is built and current.
-  Upload at the developer dashboard, item `bbjdimjmoeppaeaakjlbglibidijoiho`.
-  Listing is now **Public**, not Unlisted, so leave visibility alone and expect a
-  slower review than previous unlisted submissions.
-- **Store "What's new" text is drafted but saved nowhere but here.** Chrome Web Store
-  has no release-notes field, so it goes at the top of the Description, and the
-  description edit must go in the *same* submission as the zip or it queues a second
-  review. Draft:
+- **Web Store review outcome not yet known.** Submitted 2026-08-27, item
+  `bbjdimjmoeppaeaakjlbglibidijoiho`. Check whether it published or came back with
+  questions. Once it publishes, confirm the version shown is 1.5.0.
+- **Unconfirmed: whether the "What's new" block went into the store description with
+  that submission.** Chrome Web Store has no release-notes field, so it belongs at the
+  top of the Description, and a description edit made *after* the fact queues a second
+  review. If it did not go in, decide whether it is worth a separate review cycle or
+  should wait and ride along with 1.5.1. Draft text, kept here so it is not lost:
 
   > What's new in 1.5.0
   > Settings inside sub-panels were going missing from reports. Pages such as
@@ -74,21 +78,19 @@ remote commit where Geomglot had made the same README edit independently.
   > If you used an earlier version, clear your saved report and crawl again.
   > Full changelog: https://github.com/Geomglot/sunnylink-reporter/blob/main/CHANGELOG.md
 
-- **`PRIVACY.md` has not been reviewed since the listing went public.** Flagged but
-  never actually read this session. Reviewers do read it. Worth a pass before
-  submitting.
+- **`PRIVACY.md` was never reviewed** against the now-public listing. It was flagged
+  before submission but not read. If review comes back querying privacy disclosures,
+  start there.
 - **Two copies of the extension may be installed** (unpacked local + Web Store). They
-  produce two toolbar icons and it is easy to crawl with the stale one. Once the
-  store update lands, unload one.
-- **Not verified:** whether the Web Store dashboard has gained a release-notes field
-  since. Assumed absent based on knowledge to May 2026. Cheap to check while there.
+  produce two toolbar icons and it is easy to crawl with the stale one. Once the store
+  update publishes, unload the unpacked copy.
 
 ## NEXT UP (proposed agenda for session 2 - a default to present, not authorization)
 
-1. Submit 1.5.0 to the Chrome Web Store: read `PRIVACY.md` first, then upload the zip
-   and update the description in one submission.
-2. If Geomglot would rather not do the store step yet, the standing code item is the
-   `sectionName()` casing mismatch noted below.
+1. Check the review outcome and confirm 1.5.0 published, then unload the unpacked
+   copy so crawls cannot run against the stale build.
+2. Standing code item, whenever the store side is settled: the `sectionName()` casing
+   mismatch noted below. Small, and nothing depends on it.
 
 Waiting on Geomglot's word before any of this.
 
