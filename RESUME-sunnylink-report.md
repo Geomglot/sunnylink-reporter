@@ -99,7 +99,7 @@ ever generated from the row label instead of the panel id.
 
 ## TO RESUME
 
-Use the opener in the section below of the session that produced this file, or:
+Paste this into a fresh session:
 
 ```
 Working directory must be /Users/hugh/Library/Mobile Documents/com~apple~CloudDocs/OpenpilotTools/sunnylink-reporter (verify with pwd before anything else; if it differs, STOP and tell me). Read RESUME-sunnylink-report.md and CLAUDE.md, run `for f in *.js; do node --check "$f" || echo "FAILED: $f"; done` to confirm green, then STOP: brief me on state, present next-step options with RESUME's NEXT UP as the marked default, and wait for my word. Build nothing until I answer; anything I wrote below this opener counts as that answer.
