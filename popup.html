@@ -3,6 +3,7 @@
 <style>
   body { font-family: -apple-system, Segoe UI, sans-serif; width: 300px; padding: 12px; }
   h1 { font-size: 15px; margin: 0 0 10px; }
+  #ver { font-size: 11px; color: #888; font-weight: normal; }
   ul { list-style:none; padding:0; margin:0 0 10px; max-height:200px; overflow:auto; }
   li { font-size:12px; padding:4px 0; border-bottom:1px solid #eee; display:flex; justify-content:space-between; }
   button { width:100%; margin-top:6px; padding:8px; border:none; border-radius:6px; background:#4f46e5; color:#fff; font-size:13px; cursor:pointer; }
@@ -12,7 +13,7 @@
   #status { font-size:11px; color:#666; margin-top:6px; min-height:14px; }
 </style></head>
 <body>
-  <h1>Sunnylink Settings Reporter</h1>
+  <h1>Sunnylink Settings Reporter <span id="ver"></span></h1>
   <div id="list" class="empty">No pages scanned yet.</div>
   <button id="crawl">Crawl All Pages</button>
   <button id="rescan">Rescan Current Page</button>

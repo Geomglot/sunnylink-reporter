@@ -60,5 +60,7 @@ document.getElementById('clear').addEventListener('click', () => {
   chrome.storage.local.remove('sunnylinkReport', refreshList);
 });
 
+document.getElementById('ver').textContent = 'v' + chrome.runtime.getManifest().version;
+
 chrome.runtime.sendMessage({ type: 'CLEAR_BADGE' }).catch(() => {});
 refreshList();

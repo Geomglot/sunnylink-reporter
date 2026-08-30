@@ -17,11 +17,14 @@
   td.value.off { color:#dc2626; }
   tr.disabled td { opacity:0.4; }
   tr:nth-child(even) { background:#fafafa; }
+  .stale { background:#fef3c7; border:1px solid #fcd34d; color:#78350f; border-radius:8px;
+           padding:10px 12px; margin:-12px 0 24px; font-size:13px; }
   .empty { text-align:center; color:#666; margin-top:80px; }
 </style></head>
 <body>
   <h1>Sunnylink Settings Report</h1>
   <div class="meta" id="meta"></div>
+  <div class="stale" id="stale" hidden></div>
   <div class="grid" id="grid"></div>
   <script src="report.js"></script>
 </body></html>

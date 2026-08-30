@@ -39,7 +39,24 @@ chrome.storage.local.get('sunnylinkReport', data => {
     grid.innerHTML = '<div class="empty">No data yet. Visit the sunnylink dashboard settings pages first, then reopen this report.</div>';
     return;
   }
-  meta.textContent = 'Generated ' + isoLocal(new Date()) + ' \u2014 ' + keys.length + ' page(s) scanned';
+  // Cards can predate the running version, and an older one may simply be missing
+  // settings this version knows how to reach, so say which version captured the data
+  // rather than which one is displaying it.
+  const running = chrome.runtime.getManifest().version;
+  const stamps = Array.from(new Set(keys.map(k => report[k].version || 'older')));
+  const current = stamps.length === 1 && stamps[0] === running;
+  const stampText = stamps.map(v => v === 'older' ? 'an older version' : 'v' + v).join(', ');
+  meta.textContent = 'Generated ' + isoLocal(new Date()) + ' \u2014 ' + keys.length +
+                     ' page(s) scanned \u2014 captured by ' + (current ? 'v' + running : stampText);
+  if (!current) {
+    const stale = document.getElementById('stale');
+    stale.textContent = stamps.length > 1
+      ? 'This report mixes scans from different versions of the extension. Clear the saved data and ' +
+        'crawl again so every page comes from v' + running + '.'
+      : 'This report was captured by ' + stampText + '. You are now running v' + running +
+        ', which may reach settings the older version could not. Crawl again for a complete report.';
+    stale.hidden = false;
+  }
   // Order cards to match the sunnylink left-hand menu (top-to-bottom); the grid then
   // fills left-to-right, top-to-bottom. Fall back to scan order for older reports
   // saved before the menu index existed.

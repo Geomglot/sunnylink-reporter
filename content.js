@@ -321,7 +321,11 @@
     return new Promise(resolve => {
       chrome.storage.local.get('sunnylinkReport', data => {
         const report = data.sunnylinkReport || {};
-        report[key] = { rows, updatedAt: new Date().toISOString(), url: location.href, order: menuOrder() };
+        // Stamp the version that captured this page. A newer version may reach
+        // settings an older one could not, so a card is only meaningful alongside
+        // the version that wrote it.
+        report[key] = { rows, updatedAt: new Date().toISOString(), url: location.href,
+                        order: menuOrder(), version: chrome.runtime.getManifest().version };
         chrome.storage.local.set({ sunnylinkReport: report }, () => resolve(true));
       });
     });

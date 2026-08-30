@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.6.0
+
+- **The report now says which version of the extension captured it.** The version is
+  recorded against each page as it is scanned, not read when the report is opened, so
+  a report always names the version that actually gathered the values.
+- **A report built from more than one version says so.** Because a newer version can
+  reach settings an older one could not, a mixed report warns you and suggests
+  clearing the saved data and crawling again.
+- **The toolbar popup shows the installed version** beside its title.
+
 ## 1.5.0
 
 **Sub-panel settings are captured properly. If you have used an earlier version,
