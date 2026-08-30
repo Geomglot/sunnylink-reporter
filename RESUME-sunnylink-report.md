@@ -16,9 +16,10 @@ tree clean, nothing unpushed. Geomglot tested it and confirmed it ships as is.
 root (gitignored, local only). The earlier 1.5.0 zip was deleted so the wrong package
 cannot be uploaded by mistake.
 
-**v1.5.0 published on the Chrome Web Store on 2026-08-27,** with its "What's new"
-description block. v1.6.0 is now submittable: upload `sunnylink-reporter-1.6.0.zip`
-and replace the description's "What's new" block in the same submission.
+**v1.5.0 published on the Chrome Web Store on 2026-08-27. v1.6.0 was uploaded and
+submitted for review the same day,** with its "What's new" description block in the
+same submission. Repo and store are now in step apart from that pending review;
+nothing further is needed unless review comes back with questions.
 
 v1.6.0 records the extension version against each page as it is scanned and shows it
 on the report, with a notice when a report's pages did not all come from the running
@@ -64,16 +65,15 @@ lapsed after v1.2.0; v1.3.0/v1.4.0 already existed on the remote). Rebased onto 
 remote commit where Geomglot had made the same README edit independently. Closed by
 submitting 1.5.0 to the Chrome Web Store on 2026-08-27; review outcome not yet known
 at the time of writing. Then added version stamping: the report names the version
-that captured it and the popup shows the installed version, released as v1.6.0.
+that captured it and the popup shows the installed version, released as v1.6.0. Both releases went to the Chrome Web Store on 2026-08-27:
+v1.5.0 published, v1.6.0 submitted and awaiting review.
 
 ## OPEN LOOPS
 
-- **v1.6.0 is built and tagged but not yet submitted.** Item
-  `bbjdimjmoeppaeaakjlbglibidijoiho`. Upload `sunnylink-reporter-1.6.0.zip` and
-  replace the store description's "What's new" block with the text below in the *same*
-  submission; a later description edit queues a second review. The block replaces the
-  1.5.0 one rather than stacking above it, since the changelog link carries the
-  history.
+- **v1.6.0 review outcome not yet known.** Submitted 2026-08-27, item
+  `bbjdimjmoeppaeaakjlbglibidijoiho`. Check whether it published or came back with
+  questions; once it publishes, confirm the popup shows v1.6.0. The description text
+  that went up with it, kept as the template for the next release:
 
   > What's new in 1.6.0
   > Reports now say which version of the extension captured them, and the toolbar
@@ -93,10 +93,13 @@ that captured it and the popup shows the installed version, released as v1.6.0.
 
 ## NEXT UP (proposed agenda for session 2 - a default to present, not authorization)
 
-1. Submit v1.6.0 (zip plus the "What's new" text in OPEN LOOPS, one submission), then
-   unload the unpacked copy so crawls cannot run against a stale build.
+1. Confirm v1.6.0 published, then unload the unpacked copy so crawls cannot run
+   against a stale build.
 2. Standing code item, whenever the store side is settled: the `sectionName()` casing
    mismatch noted below. Small, and nothing depends on it.
+
+Nothing is in flight beyond the review itself. If it published cleanly, this project
+is at a natural resting point.
 
 Waiting on Geomglot's word before any of this.
 
