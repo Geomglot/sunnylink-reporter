@@ -8,16 +8,25 @@ A Chrome MV3 extension that compiles a read-only report of your own sunnylink.ai
 device settings, either as you browse or via a one-click auto-crawl. All data stays
 in `chrome.storage.local`. Repo and Chrome Web Store listing are both public.
 
-## CURRENT STATE (2026-08-27)
+## CURRENT STATE (2026-08-27, updated)
 
-v1.5.0 is committed, tagged and pushed to `main` (`11661db`, tag `v1.5.0`). Working
-tree clean, nothing unpushed. Geomglot tested the build and confirmed it good.
+v1.6.0 is committed, tagged and pushed to `main` (`74e2f6b`, tag `v1.6.0`). Working
+tree clean, nothing unpushed. Geomglot tested it and confirmed it ships as is.
+`sunnylink-reporter-1.6.0.zip` is built from the pushed tree and sits in the project
+root (gitignored, local only). The earlier 1.5.0 zip was deleted so the wrong package
+cannot be uploaded by mistake.
 
-**Submitted to the Chrome Web Store on 2026-08-27, awaiting review.** The package
-uploaded was `sunnylink-reporter-1.5.0.zip`, built from the pushed tree and still in
-the project root (gitignored, local only). Nothing further is needed unless review
-comes back with questions. The listing is Public, so this review may take longer than
-the unlisted ones before it.
+**v1.5.0 was submitted to the Chrome Web Store on 2026-08-27 and is awaiting review,
+with the "What's new" description block included in that submission.** v1.6.0 cannot
+be submitted until v1.5.0 clears: the store will not accept a new package while one is
+pending. So the store is one release behind the repo, deliberately. The listing is
+Public, so review may take longer than the unlisted ones before it.
+
+v1.6.0 records the extension version against each page as it is scanned and shows it
+on the report, with a notice when a report's pages did not all come from the running
+version. The stamp is taken at capture time rather than read at display time, because
+saved data outlives an update and a pre-1.5.0 report is missing settings later
+versions can reach.
 
 v1.5.0 fixes sub-panel capture. The bug: `spaGoto` compared only the pathname, but a
 sub-panel shares its parent's pathname and differs only by `?panel=`, so "go back to
@@ -56,18 +65,18 @@ now-public repo and store listing, bumped to 1.5.0, restored version tagging (it
 lapsed after v1.2.0; v1.3.0/v1.4.0 already existed on the remote). Rebased onto a
 remote commit where Geomglot had made the same README edit independently. Closed by
 submitting 1.5.0 to the Chrome Web Store on 2026-08-27; review outcome not yet known
-at the time of writing.
+at the time of writing. Then added version stamping: the report names the version
+that captured it and the popup shows the installed version, released as v1.6.0.
 
 ## OPEN LOOPS
 
-- **Web Store review outcome not yet known.** Submitted 2026-08-27, item
-  `bbjdimjmoeppaeaakjlbglibidijoiho`. Check whether it published or came back with
-  questions. Once it publishes, confirm the version shown is 1.5.0.
-- **Unconfirmed: whether the "What's new" block went into the store description with
-  that submission.** Chrome Web Store has no release-notes field, so it belongs at the
-  top of the Description, and a description edit made *after* the fact queues a second
-  review. If it did not go in, decide whether it is worth a separate review cycle or
-  should wait and ride along with 1.5.1. Draft text, kept here so it is not lost:
+- **v1.5.0 review outcome not yet known.** Item `bbjdimjmoeppaeaakjlbglibidijoiho`.
+  Check whether it published or came back with questions.
+- **v1.6.0 is built and tagged but not submitted,** and cannot be until v1.5.0 clears
+  review. Once it does: upload `sunnylink-reporter-1.6.0.zip` and replace the "What's
+  new" block in the store description in the same submission (a later description edit
+  queues a second review). The 1.5.0 block that is live now, kept for reference and as
+  a template for the 1.6.0 one:
 
   > What's new in 1.5.0
   > Settings inside sub-panels were going missing from reports. Pages such as
@@ -87,8 +96,8 @@ at the time of writing.
 
 ## NEXT UP (proposed agenda for session 2 - a default to present, not authorization)
 
-1. Check the review outcome and confirm 1.5.0 published, then unload the unpacked
-   copy so crawls cannot run against the stale build.
+1. Check whether v1.5.0 published. If it has, submit v1.6.0 with a fresh "What's new"
+   block, then unload the unpacked copy so crawls cannot run against a stale build.
 2. Standing code item, whenever the store side is settled: the `sectionName()` casing
    mismatch noted below. Small, and nothing depends on it.
 
