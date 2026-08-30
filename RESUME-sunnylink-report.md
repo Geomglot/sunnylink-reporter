@@ -16,11 +16,9 @@ tree clean, nothing unpushed. Geomglot tested it and confirmed it ships as is.
 root (gitignored, local only). The earlier 1.5.0 zip was deleted so the wrong package
 cannot be uploaded by mistake.
 
-**v1.5.0 was submitted to the Chrome Web Store on 2026-08-27 and is awaiting review,
-with the "What's new" description block included in that submission.** v1.6.0 cannot
-be submitted until v1.5.0 clears: the store will not accept a new package while one is
-pending. So the store is one release behind the repo, deliberately. The listing is
-Public, so review may take longer than the unlisted ones before it.
+**v1.5.0 published on the Chrome Web Store on 2026-08-27,** with its "What's new"
+description block. v1.6.0 is now submittable: upload `sunnylink-reporter-1.6.0.zip`
+and replace the description's "What's new" block in the same submission.
 
 v1.6.0 records the extension version against each page as it is scanned and shows it
 on the report, with a notice when a report's pages did not all come from the running
@@ -70,21 +68,20 @@ that captured it and the popup shows the installed version, released as v1.6.0.
 
 ## OPEN LOOPS
 
-- **v1.5.0 review outcome not yet known.** Item `bbjdimjmoeppaeaakjlbglibidijoiho`.
-  Check whether it published or came back with questions.
-- **v1.6.0 is built and tagged but not submitted,** and cannot be until v1.5.0 clears
-  review. Once it does: upload `sunnylink-reporter-1.6.0.zip` and replace the "What's
-  new" block in the store description in the same submission (a later description edit
-  queues a second review). The 1.5.0 block that is live now, kept for reference and as
-  a template for the 1.6.0 one:
+- **v1.6.0 is built and tagged but not yet submitted.** Item
+  `bbjdimjmoeppaeaakjlbglibidijoiho`. Upload `sunnylink-reporter-1.6.0.zip` and
+  replace the store description's "What's new" block with the text below in the *same*
+  submission; a later description edit queues a second review. The block replaces the
+  1.5.0 one rather than stacking above it, since the changelog link carries the
+  history.
 
-  > What's new in 1.5.0
-  > Settings inside sub-panels were going missing from reports. Pages such as
-  > Steering hold several sub-panels and only the first was ever captured, so
-  > Lane Centering settings never appeared at all. All sub-panels are now
-  > captured, each showing only its own settings, and the crawl is faster.
+  > What's new in 1.6.0
+  > Reports now say which version of the extension captured them, and the toolbar
+  > popup shows the version you have installed. If a report was gathered by an older
+  > version, or mixes scans from several, it now tells you and suggests crawling
+  > again. This matters because a saved report outlives an update: one gathered
+  > before 1.5.0 is missing settings that later versions can reach.
   >
-  > If you used an earlier version, clear your saved report and crawl again.
   > Full changelog: https://github.com/Geomglot/sunnylink-reporter/blob/main/CHANGELOG.md
 
 - **`PRIVACY.md` was never reviewed** against the now-public listing. It was flagged
@@ -96,8 +93,8 @@ that captured it and the popup shows the installed version, released as v1.6.0.
 
 ## NEXT UP (proposed agenda for session 2 - a default to present, not authorization)
 
-1. Check whether v1.5.0 published. If it has, submit v1.6.0 with a fresh "What's new"
-   block, then unload the unpacked copy so crawls cannot run against a stale build.
+1. Submit v1.6.0 (zip plus the "What's new" text in OPEN LOOPS, one submission), then
+   unload the unpacked copy so crawls cannot run against a stale build.
 2. Standing code item, whenever the store side is settled: the `sectionName()` casing
    mismatch noted below. Small, and nothing depends on it.
 
