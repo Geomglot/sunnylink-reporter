@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.6.1
+
+- **The Maps page now appears in the report.** It shows which offline map is on the
+  device (for example "Canada - All") and its status line, such as how far a download
+  has got. Maps has no switches or dropdowns, only this information box, so earlier
+  versions found nothing to record there and left the page out of the report
+  entirely. The country picker for starting a new download is a form rather than a
+  setting, so it is still left out.
+
 ## 1.6.0
 
 - **The report now says which version of the extension captured it.** The version is

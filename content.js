@@ -95,6 +95,22 @@
     if (!rows.some(r => r.label === label)) rows.push({ label, value, disabled: isDisabled(card) });
   }
 
+  // The Maps page has no switches, dropdowns or sliders at all. What it does show is
+  // which offline map is on the device: a "Current Map" heading followed by a bordered
+  // card whose first line is the region ("Canada - All") and whose optional second
+  // line is its status (e.g. "Downloading 604/765"). The "Country" picker further
+  // down is a form for starting a new download, not a setting, so it is left out.
+  function extractCurrentMap(scope, rows) {
+    const heading = Array.from(scope.querySelectorAll('p,h1,h2,h3,h4'))
+      .find(e => !isHidden(e) && /^current map$/i.test(esc(e.textContent)));
+    const card = heading && heading.parentElement && heading.parentElement.nextElementSibling;
+    if (!card) return;
+    const lines = Array.from(card.querySelectorAll('p')).map(p => esc(p.textContent)).filter(Boolean);
+    if (isPlaceholder(lines[0])) return;
+    rows.push({ label: 'Current Map', value: lines[0] });
+    if (lines[1] && !isPlaceholder(lines[1])) rows.push({ label: 'Map Status', value: lines[1] });
+  }
+
   // A value that is empty or still a live-link placeholder ("Connecting...") is not
   // a real setting value and must never be recorded.
   function isPlaceholder(value) {
@@ -150,6 +166,7 @@
     }
 
     extractVehicleModel(scope, rows);
+    extractCurrentMap(scope, rows);
 
     const seen = new Set();
     return rows.filter(r => {
