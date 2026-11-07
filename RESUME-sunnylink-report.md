@@ -16,9 +16,8 @@ build and confirmed the Maps card appears. `sunnylink-reporter-1.6.1.zip` is bui
 from the pushed tree and sits in the project root (gitignored, local only); the 1.6.0
 zip was deleted so the wrong package cannot be uploaded by mistake.
 
-**The 1.6.1 zip has NOT yet been uploaded to the Chrome Web Store.** That is
-Geomglot's step. Whether the 1.6.0 review (submitted 2026-08-27) ever completed is
-unknown to this session.
+**v1.6.1 was uploaded to the Chrome Web Store by Geomglot (confirmed 2026-11-07).**
+Recorded here as submitted; whether review has passed and it is live was not stated.
 
 v1.6.1 adds the Maps page (`/dashboard/osm`) to the report. That page has no
 switches, dropdowns or sliders, so the control-based scanner found zero rows and
@@ -56,21 +55,9 @@ v1.5.0 (published) and v1.6.0 (version stamping, submitted for review).
 **Session 2 (2026-11-07).** Reported: Maps screen not reported. Inspected the live
 page via Chrome automation, found it has no controls, added `extractCurrentMap()`,
 tested the logic live, Geomglot verified the unpacked build. Released v1.6.1 (commit,
-tag, push, zip). Store upload left to Geomglot.
+tag, push, zip). Geomglot then uploaded 1.6.1 to the Chrome Web Store.
 
 ## OPEN LOOPS
-
-- **Upload v1.6.1 to the Chrome Web Store** (item `bbjdimjmoeppaeaakjlbglibidijoiho`).
-  Waiting on Geomglot. First check whether 1.6.0 ever published; if it is still in
-  review, the 1.6.1 upload likely supersedes it and the "What's new" text should cover
-  both. Suggested text:
-
-  > What's new in 1.6.1
-  > The Maps page now appears in the report, showing which offline map is on your
-  > device and its status (such as download progress). Earlier versions left Maps out
-  > entirely because the page has no switches or dropdowns to read.
-  >
-  > Full changelog: https://github.com/Geomglot/sunnylink-reporter/blob/main/CHANGELOG.md
 
 - **Maps card in other states is unverified.** Once the device's Canada download
   finishes, rescan Maps and confirm both rows still read sensibly. Also untested: no
@@ -85,7 +72,7 @@ tag, push, zip). Store upload left to Geomglot.
 
 ## NEXT UP (proposed agenda for session 3 - a default to present, not authorization)
 
-1. Confirm store state (1.6.0 / 1.6.1), then unload the unpacked copy.
+1. Once v1.6.1 is live on the store, unload the unpacked copy.
 2. Rescan Maps after the download completes; adjust `extractCurrentMap()` if the
    finished layout differs.
 3. Optional idea, needs Geomglot's agreement: sweep all settings pages for others that
