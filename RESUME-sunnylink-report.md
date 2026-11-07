@@ -8,105 +8,92 @@ A Chrome MV3 extension that compiles a read-only report of your own sunnylink.ai
 device settings, either as you browse or via a one-click auto-crawl. All data stays
 in `chrome.storage.local`. Repo and Chrome Web Store listing are both public.
 
-## CURRENT STATE (2026-08-27, updated)
+## CURRENT STATE (2026-11-07)
 
-v1.6.0 is committed, tagged and pushed to `main` (`74e2f6b`, tag `v1.6.0`). Working
-tree clean, nothing unpushed. Geomglot tested it and confirmed it ships as is.
-`sunnylink-reporter-1.6.0.zip` is built from the pushed tree and sits in the project
-root (gitignored, local only). The earlier 1.5.0 zip was deleted so the wrong package
-cannot be uploaded by mistake.
+v1.6.1 is committed, tagged and pushed to `main` (`2cc44f6`, tag `v1.6.1`). Working
+tree clean apart from this handoff, nothing unpushed. Geomglot tested the unpacked
+build and confirmed the Maps card appears. `sunnylink-reporter-1.6.1.zip` is built
+from the pushed tree and sits in the project root (gitignored, local only); the 1.6.0
+zip was deleted so the wrong package cannot be uploaded by mistake.
 
-**v1.5.0 published on the Chrome Web Store on 2026-08-27. v1.6.0 was uploaded and
-submitted for review the same day,** with its "What's new" description block in the
-same submission. Repo and store are now in step apart from that pending review;
-nothing further is needed unless review comes back with questions.
+**The 1.6.1 zip has NOT yet been uploaded to the Chrome Web Store.** That is
+Geomglot's step. Whether the 1.6.0 review (submitted 2026-08-27) ever completed is
+unknown to this session.
 
-v1.6.0 records the extension version against each page as it is scanned and shows it
-on the report, with a notice when a report's pages did not all come from the running
-version. The stamp is taken at capture time rather than read at display time, because
-saved data outlives an update and a pre-1.5.0 report is missing settings later
-versions can reach.
+v1.6.1 adds the Maps page (`/dashboard/osm`) to the report. That page has no
+switches, dropdowns or sliders, so the control-based scanner found zero rows and
+`scanAndSave` silently dropped it. `extractCurrentMap()` in `content.js` now reads the
+"Current Map" heading's following card: first line -> "Current Map" (e.g.
+"Canada - All"), second line -> "Map Status" (e.g. "Downloading 738/765"). The
+Country picker is a download form, deliberately ignored. Same pattern as
+`extractVehicleModel()`.
 
-v1.5.0 fixes sub-panel capture. The bug: `spaGoto` compared only the pathname, but a
-sub-panel shares its parent's pathname and differs only by `?panel=`, so "go back to
-base" returned instantly with the panel still open and the next panel click was
-swallowed by the pending navigation. Only the first sub-panel on any page was ever
-captured; Lane Centering settings never appeared at all. Diagnosed and verified
-against the live dashboard via Chrome automation, not by reasoning alone.
+Caveat: only the "downloading" layout of that card was seen live. The finished and
+no-map-installed layouts were not observed.
 
-Four DOM facts about the dashboard were established by inspection and now drive the
-crawl (all documented in code comments in `content.js`):
+Earlier releases, for context: v1.6.0 stamps the capturing extension version on each
+page and warns on mixed-version reports. v1.5.0 fixed sub-panel capture (`spaGoto`
+compared pathname only, but sub-panels differ only by `?panel=`).
 
-- An open sub-panel marks the page beneath it `inert`. That is the exact boundary
-  for scoping a scan to just the panel.
+DOM facts about the dashboard that drive the crawl (documented in `content.js`):
+
+- An open sub-panel marks the page beneath it `inert`; scans skip inert content.
 - A row that opens a sub-panel carries `row-press` and a static chevron.
-- A row that expands in place (Models x8, Maps "Canada", Vehicle "View details") has
-  a chevron carrying `transition-transform`. Zero overlap with the above across all
-  11 settings pages.
-- A sub-panel locked by a switched-off parent setting is a real `disabled` button,
-  not just a dimmed one.
-
-Because locked and expanding rows are filtered before any click, every row the crawl
-now clicks opens on the first 100ms poll. The 5s `waitForPanel` timeout is a
-stuck-page safety net with ~50x headroom, not a tuned value.
+- A row that expands in place (Models x8, Vehicle "View details") has a chevron
+  carrying `transition-transform`. The 2026-08 notes also listed Maps "Canada" here;
+  on 2026-11-07 the Maps page showed "Canada - All" as a static info card instead, so
+  the Maps page has likely been redesigned since.
+- A sub-panel locked by a switched-off parent setting is a real `disabled` button.
+- Pages with no recognised controls produce no card at all. Any other page that
+  shows only information boxes would be silently missing in the same way Maps was.
 
 ## Session log
 
-**Session 1 (2026-08-25 to 08-27).** Reported symptom: Lane Centering settings in the
-Steering sub-menu were never captured. Root-caused the `spaGoto` pathname-comparison
-race on the live site; fixed it plus panel-scan scoping via `[inert]`; hardened
-sub-panel row detection to read the row's own label rather than every word in the
-button. Built and then removed an "unavailable card" feature for locked panels at
-Geomglot's request (it produced 8 empty cards on Models); investigating that revealed
-the Models rows were never locked panels at all but accordions, leading to the
-attribute-based filtering above. Added `CHANGELOG.md`, updated `README.md` for the
-now-public repo and store listing, bumped to 1.5.0, restored version tagging (it had
-lapsed after v1.2.0; v1.3.0/v1.4.0 already existed on the remote). Rebased onto a
-remote commit where Geomglot had made the same README edit independently. Closed by
-submitting 1.5.0 to the Chrome Web Store on 2026-08-27; review outcome not yet known
-at the time of writing. Then added version stamping: the report names the version
-that captured it and the popup shows the installed version, released as v1.6.0. Both releases went to the Chrome Web Store on 2026-08-27:
-v1.5.0 published, v1.6.0 submitted and awaiting review.
+**Session 1 (2026-08-25 to 08-27).** Fixed sub-panel capture (spaGoto race, `[inert]`
+scoping, attribute-based row filtering); added CHANGELOG, restored tagging; released
+v1.5.0 (published) and v1.6.0 (version stamping, submitted for review).
+
+**Session 2 (2026-11-07).** Reported: Maps screen not reported. Inspected the live
+page via Chrome automation, found it has no controls, added `extractCurrentMap()`,
+tested the logic live, Geomglot verified the unpacked build. Released v1.6.1 (commit,
+tag, push, zip). Store upload left to Geomglot.
 
 ## OPEN LOOPS
 
-- **v1.6.0 review outcome not yet known.** Submitted 2026-08-27, item
-  `bbjdimjmoeppaeaakjlbglibidijoiho`. Check whether it published or came back with
-  questions; once it publishes, confirm the popup shows v1.6.0. The description text
-  that went up with it, kept as the template for the next release:
+- **Upload v1.6.1 to the Chrome Web Store** (item `bbjdimjmoeppaeaakjlbglibidijoiho`).
+  Waiting on Geomglot. First check whether 1.6.0 ever published; if it is still in
+  review, the 1.6.1 upload likely supersedes it and the "What's new" text should cover
+  both. Suggested text:
 
-  > What's new in 1.6.0
-  > Reports now say which version of the extension captured them, and the toolbar
-  > popup shows the version you have installed. If a report was gathered by an older
-  > version, or mixes scans from several, it now tells you and suggests crawling
-  > again. This matters because a saved report outlives an update: one gathered
-  > before 1.5.0 is missing settings that later versions can reach.
+  > What's new in 1.6.1
+  > The Maps page now appears in the report, showing which offline map is on your
+  > device and its status (such as download progress). Earlier versions left Maps out
+  > entirely because the page has no switches or dropdowns to read.
   >
   > Full changelog: https://github.com/Geomglot/sunnylink-reporter/blob/main/CHANGELOG.md
 
-- **`PRIVACY.md` was never reviewed** against the now-public listing. It was flagged
-  before submission but not read. If review comes back querying privacy disclosures,
-  start there.
-- **Two copies of the extension may be installed** (unpacked local + Web Store). They
-  produce two toolbar icons and it is easy to crawl with the stale one. Once the store
+- **Maps card in other states is unverified.** Once the device's Canada download
+  finishes, rescan Maps and confirm both rows still read sensibly. Also untested: no
+  map installed.
+- **"Map Status" is a snapshot** (a mid-download count goes stale). Kept deliberately
+  so the report shows whether maps are fully installed; Geomglot was offered dropping
+  it and did not ask to.
+- **`PRIVACY.md` was never reviewed** against the public listing. Start there if store
+  review queries privacy disclosures.
+- **Two copies of the extension may be installed** (unpacked + store). Once the store
   update publishes, unload the unpacked copy.
 
-## NEXT UP (proposed agenda for session 2 - a default to present, not authorization)
+## NEXT UP (proposed agenda for session 3 - a default to present, not authorization)
 
-1. Confirm v1.6.0 published, then unload the unpacked copy so crawls cannot run
-   against a stale build.
-2. Standing code item, whenever the store side is settled: the `sectionName()` casing
-   mismatch noted below. Small, and nothing depends on it.
-
-Nothing is in flight beyond the review itself. If it published cleanly, this project
-is at a natural resting point.
+1. Confirm store state (1.6.0 / 1.6.1), then unload the unpacked copy.
+2. Rescan Maps after the download completes; adjust `extractCurrentMap()` if the
+   finished layout differs.
+3. Optional idea, needs Geomglot's agreement: sweep all settings pages for others that
+   render zero rows (same failure shape as Maps) so none are silently missing.
+4. Standing small item: `sectionName()` titlecases panel ids, so `mads_settings` shows
+   "Mads Settings" while the row reads "MADS Settings". Harmless today.
 
 Waiting on Geomglot's word before any of this.
-
-Known-but-unfixed, no agreement to act: `sectionName()` derives a sub-panel's card
-title from the URL panel id, so `mads_settings` titlecases to "Mads Settings" while
-the row itself reads "MADS Settings". Harmless today. It only bites if a card key is
-ever generated from the row label instead of the panel id.
 
 ## TO RESUME
 
